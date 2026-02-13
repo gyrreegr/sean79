@@ -110,9 +110,29 @@ let userId = "";
 
 async function initLIFF() {
   await liff.init({ liffId: "2009125897-4VkAUNjx" });
-  if (!liff.isLoggedIn()) liff.login();
+
+  if (!liff.isLoggedIn()) {
+    liff.login();
+    return;
+  }
+
   const profile = await liff.getProfile();
   userId = profile.userId;
+
+  // ✅ 新增驗證資訊
+  console.log("LIFF profile.userId:", profile.userId);
+
+  const idToken = liff.getIDToken();
+  if (idToken) {
+    const payload = JSON.parse(atob(idToken.split('.')[1]));
+    console.log("ID Token sub:", payload.sub);
+  }
+
+  console.log("Context:", liff.getContext());
+
+  // 顯示在畫面上方便觀察
+  document.getElementById("userid").innerText =
+    "LIFF userId: " + userId;
 }
 
 async function submitForm() {
@@ -152,6 +172,7 @@ initLIFF();
 
 </body>
 </html>
+
 
 
 
