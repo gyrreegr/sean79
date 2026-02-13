@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>享友+ 會員行程表單</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #f2f4f7;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+  }
+  h1 {
+    font-size: 22px;
+    color: #1A3C6D;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  p.subtitle {
+    color: #4a4a4a;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: #1A3C6D;
+    cursor: pointer;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .checkbox-group label:last-child {
+    border-bottom: none;
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+  button {
+    margin-top: 10px;
+    background-color: #1A3C6D;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background-color: #16345a;
+  }
+  #userid {
+    font-weight: bold;
+    color: #1A3C6D;
+    word-break: break-all;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📊 享友+ 會員行程選擇</h1>
+  <p class="subtitle">您的 LINE UserID 會自動填入</p>
+  <div id="userid">讀取中...</div>
+
+  <div class="card">
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="A01"> 台北一日遊 (A01)</label>
+      <label><input type="checkbox" value="B02"> 花蓮兩日遊 (B02)</label>
+      <label><input type="checkbox" value="C03"> 台南美食團 (C03)</label>
+      <label><input type="checkbox" value="D04"> 高雄港灣夜景 (D04)</label>
+      <label><input type="checkbox" value="E05"> 墾丁三日遊 (E05)</label>
+    </div>
+    <button onclick="submitForm()">送出行程</button>
+  </div>
+</div>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwQxdfzqpGGHcA94sj5zISIcCmzPB5PAbSM755-5n79DAPMwo6EPf_WCuh6WuExsJHl/execㄋ"; // Google Sheet Apps Script
+let userId = "";
+
+async function initLIFF() {
+  await liff.init({ liffId: "你的LIFFID" });
+  if (!liff.isLoggedIn()) liff.login();
+  const profile = await liff.getProfile();
+  userId = profile.userId;
+  document.getElementById("userid").innerText = userId;
+}
+
+async function submitForm() {
+  const checkedBoxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked');
+  const selected = Array.from(checkedBoxes).map(cb => cb.value);
+
+  if (selected.length === 0) {
+    alert("請至少選擇一個行程！");
+    return;
+  }
+
+  const data = {
+    Lineuserid: userId,
+    ItineraryCode: selected.join(","),
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      alert("行程送出成功！");
+      liff.closeWindow();
+    } else {
+      alert("送出失敗，請稍後再試。");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("送出時發生錯誤。");
+  }
+}
+
+initLIFF();
+</script>
+
+</body>
+</html>
