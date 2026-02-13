@@ -105,7 +105,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbwQxdfzqpGGHcA94sj5zISI
 let userId = "";
 
 async function initLIFF() {
-  await liff.init({ liffId: "你的LIFFID" });
+  await liff.init({ liffId: "2009125897-4VkAUNjx" });
   if (!liff.isLoggedIn()) liff.login();
   const profile = await liff.getProfile();
   userId = profile.userId;
@@ -149,3 +149,4 @@ initLIFF();
 
 </body>
 </html>
+
