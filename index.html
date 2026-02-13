@@ -26,12 +26,6 @@
     text-align: center;
     margin-bottom: 10px;
   }
-  p.subtitle {
-    color: #4a4a4a;
-    font-size: 14px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
   .card {
     background-color: #ffffff;
     border-radius: 12px;
@@ -51,13 +45,8 @@
     padding: 8px 0;
     border-bottom: 1px solid #e0e0e0;
   }
-  .checkbox-group label:last-child {
-    border-bottom: none;
-  }
-  input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-  }
+  .checkbox-group label:last-child { border-bottom: none; }
+  input[type="checkbox"] { width: 18px; height: 18px; }
   button {
     margin-top: 10px;
     background-color: #1A3C6D;
@@ -69,14 +58,11 @@
     cursor: pointer;
     transition: background 0.3s;
   }
-  button:hover {
-    background-color: #16345a;
-  }
-  #userid {
+  button:hover { background-color: #16345a; }
+  #status {
+    text-align: center;
     font-weight: bold;
     color: #1A3C6D;
-    word-break: break-all;
-    text-align: center;
     margin-bottom: 15px;
   }
 </style>
@@ -85,8 +71,7 @@
 
 <div class="container">
   <h1>📊 享友+ 會員行程選擇</h1>
-  <p class="subtitle">您的 LINE UserID 會自動填入</p>
-  <div id="userid">讀取中...</div>
+  <div id="status"></div>
 
   <div class="card">
     <div class="checkbox-group">
@@ -97,23 +82,22 @@
       <label><input type="checkbox" value="D02_2"> 📆第二日 大安森林公園 (D02_2)</label>
       <label><input type="checkbox" value="D02_3"> 📆第二日 故宮博物院 (D02_3)</label>
       <label><input type="checkbox" value="D02_4"> 📆第二日 木柵動物園 (D02_4)</label>
-      <label><input type="checkbox" value="D02_5">  📆第二日 淡水 (D02_5))</label>
-      <label><input type="checkbox" value="D03">  📆第三日行程 (D03))</label>
+      <label><input type="checkbox" value="D02_5"> 📆第二日 淡水 (D02_5)</label>
+      <label><input type="checkbox" value="D03"> 📆第三日行程 (D03)</label>
     </div>
     <button onclick="submitForm()">送出行程</button>
   </div>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycby9buLLhE_jjkzqUrfhM-S34WuynUyHYYThhDQ99KvjhX1ru7k13zN7yPh_c1573XNDOg/exec"; // Google Sheet Apps Script
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwQxdfzqpGGHcA94sj5zISIcCmzPB5PAbSM755-5n79DAPMwo6EPf_WCuh6WuExsJHl/exec"; // 替換成你的 Apps Script URL
 let userId = "";
 
 async function initLIFF() {
-  await liff.init({ liffId: "2009125897-4VkAUNjx" });
+  await liff.init({ liffId: "1PVtguHOp4Kqim0Vl2GU_srqoiwJaI-f4dnEyzNq2Sxs" }); // 替換 LIFF ID
   if (!liff.isLoggedIn()) liff.login();
   const profile = await liff.getProfile();
   userId = profile.userId;
-  document.getElementById("userid").innerText = userId;
 }
 
 async function submitForm() {
@@ -124,6 +108,8 @@ async function submitForm() {
     alert("請至少選擇一個行程！");
     return;
   }
+
+  document.getElementById("status").innerText = "讀取中...";
 
   const data = {
     Lineuserid: userId,
@@ -136,15 +122,16 @@ async function submitForm() {
       method: "POST",
       body: JSON.stringify(data)
     });
+
     if (res.ok) {
-      alert("行程送出成功！");
-      liff.closeWindow();
+      document.getElementById("status").innerText = "行程送出成功！";
+      setTimeout(() => liff.closeWindow(), 800); // 0.8 秒後自動關閉
     } else {
-      alert("送出失敗，請稍後再試。");
+      document.getElementById("status").innerText = "送出失敗，請稍後再試。";
     }
   } catch (err) {
     console.error(err);
-    alert("送出時發生錯誤。");
+    document.getElementById("status").innerText = "送出時發生錯誤。";
   }
 }
 
@@ -153,7 +140,3 @@ initLIFF();
 
 </body>
 </html>
-
-
-
-
