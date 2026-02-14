@@ -86,7 +86,7 @@
 <div class="container">
   <h1>📊 享友+ 會員行程選擇</h1>
   <p class="subtitle">本系統由享天氣團隊維護，聯絡洽相關社群</p>
-  <div id="userid" style="font-size:13px; line-height:1.4;"></div>
+  <div id="userid">請輸入您需訂閱示警的地區...</div>
 
   <div class="card">
     <div class="checkbox-group">
@@ -110,40 +110,9 @@ let userId = "";
 
 async function initLIFF() {
   await liff.init({ liffId: "2009129651-lUr8hMUF" });
-
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
-  }
-
+  if (!liff.isLoggedIn()) liff.login();
   const profile = await liff.getProfile();
   userId = profile.userId;
-
-  let idTokenSub = "無 ID Token";
-  const idToken = liff.getIDToken();
-
-  if (idToken) {
-    try {
-      const payload = JSON.parse(atob(idToken.split('.')[1]));
-      idTokenSub = payload.sub;
-    } catch (e) {
-      idTokenSub = "解析失敗";
-    }
-  }
-
-  const context = liff.getContext();
-
-  // 🔥 直接顯示在畫面上
-  document.getElementById("userid").innerHTML = `
-    <div>🔹 LIFF profile.userId:</div>
-    <div style="word-break:break-all;">${profile.userId}</div><br>
-
-    <div>🔹 ID Token sub:</div>
-    <div style="word-break:break-all;">${idTokenSub}</div><br>
-
-    <div>🔹 Context type:</div>
-    <div>${context.type}</div>
-  `;
 }
 
 async function submitForm() {
@@ -183,11 +152,3 @@ initLIFF();
 
 </body>
 </html>
-
-
-
-
-
-
-
-
