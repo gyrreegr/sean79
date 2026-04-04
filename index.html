@@ -16,195 +16,407 @@
     --warn: #ffcc00;
     --green: #00ff9d;
     --red: #ff2d55;
-    --purple: #b060ff;
     --text: #c8dff0;
     --dim: #4a6278;
     --mono: 'Share Tech Mono', monospace;
     --sans: 'Noto Sans TC', sans-serif;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    background: var(--bg); color: var(--text); font-family: var(--sans);
-    min-height: 100vh; overflow-x: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
     background-image:
       radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,212,255,0.07) 0%, transparent 60%),
       repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,212,255,0.03) 40px),
       repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,212,255,0.03) 40px);
   }
 
+  /* ── Header ── */
   header {
     border-bottom: 1px solid var(--border);
-    background: rgba(8,14,26,0.95); backdrop-filter: blur(12px);
-    padding: 0 24px; height: 58px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,14,26,0.95);
+    backdrop-filter: blur(12px);
+    padding: 0 24px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-  .logo { font-family: var(--mono); font-size: 17px; letter-spacing: 3px; color: var(--accent); text-shadow: 0 0 18px rgba(0,212,255,0.6); display: flex; align-items: center; gap: 10px; }
+  .logo {
+    font-family: var(--mono);
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-shadow: 0 0 18px rgba(0,212,255,0.6);
+    display: flex; align-items: center; gap: 10px;
+  }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 10px var(--accent2); animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .clock { font-family: var(--mono); font-size: 11px; color: var(--dim); }
 
-  .hbtn { font-family: var(--mono); font-size: 11px; letter-spacing: 1px; padding: 6px 14px; border: 1px solid; background: transparent; cursor: pointer; border-radius: 2px; transition: all .2s; position: relative; }
-  .hbtn-notif { border-color: var(--accent); color: var(--accent); }
-  .hbtn-notif:hover, .hbtn-notif.active { background: var(--accent); color: var(--bg); box-shadow: 0 0 18px rgba(0,212,255,0.4); }
-  .hbtn-refresh { border-color: var(--border); color: var(--dim); }
-  .hbtn-refresh:hover { border-color: var(--accent); color: var(--accent); }
-  .notif-badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: #fff; font-size: 9px; width: 15px; height: 15px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
 
-  .main { display: grid; grid-template-columns: 1fr 390px; gap: 16px; padding: 16px 24px; max-width: 1600px; margin: 0 auto; }
+  .clock {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--dim);
+  }
 
-  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
-  .panel-header { padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(0,212,255,0.04); }
-  .panel-title { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+  .notif-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 7px 16px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .notif-btn:hover, .notif-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 18px rgba(0,212,255,0.4);
+  }
+  .notif-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 10px; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; display: none; }
 
+  .refresh-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--dim);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all .2s;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Main Layout ── */
+  .main { display: grid; grid-template-columns: 1fr 380px; gap: 16px; padding: 16px 24px; max-width: 1600px; margin: 0 auto; }
+
+  /* ── Panel Base ── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,212,255,0.04);
+  }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .panel-body { padding: 14px; }
+
+  /* ── Left column ── */
   .left-col { display: flex; flex-direction: column; gap: 16px; }
 
-  /* Banners */
-  .alert-banner { display: none; padding: 12px 16px; background: linear-gradient(90deg, rgba(255,78,0,0.15), rgba(255,78,0,0.04)); border: 1px solid var(--accent2); border-radius: 3px; animation: blink-border 1.2s ease-in-out infinite; }
-  .alert-banner.active { display: flex; align-items: flex-start; gap: 12px; }
-  @keyframes blink-border { 0%,100%{border-color:var(--accent2)} 50%{border-color:rgba(255,78,0,0.2)} }
-  .alert-icon { font-size: 20px; flex-shrink: 0; }
+  /* Radar */
+  .radar-wrap {
+    position: relative;
+    background: #000;
+    min-height: 380px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .radar-img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: contain;
+    display: block;
+  }
+  .radar-overlay {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(4,8,15,0.8);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+  .radar-timestamp { position: absolute; bottom: 8px; right: 8px; background: rgba(4,8,15,0.8); border: 1px solid var(--border); padding: 4px 8px; font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+  /* Alert trigger banner */
+  .alert-banner {
+    display: none;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, rgba(255,78,0,0.15), rgba(255,78,0,0.05));
+    border: 1px solid var(--accent2);
+    border-radius: 3px;
+    animation: blink-border 1.2s ease-in-out infinite;
+  }
+  .alert-banner.active { display: flex; align-items: center; gap: 12px; }
+  @keyframes blink-border { 0%,100%{border-color:var(--accent2)} 50%{border-color:transparent} }
+  .alert-icon { font-size: 20px; }
   .alert-text strong { color: var(--accent2); font-size: 14px; }
   .alert-text p { font-size: 12px; color: var(--text); opacity: .8; margin-top: 2px; }
 
-  .posted-banner { display: none; padding: 12px 16px; background: linear-gradient(90deg, rgba(0,255,157,0.1), rgba(0,255,157,0.03)); border: 1px solid var(--green); border-radius: 3px; gap: 12px; align-items: flex-start; }
-  .posted-banner.active { display: flex; }
-  .posted-banner strong { color: var(--green); font-size: 13px; }
-  .posted-banner p { font-size: 12px; color: var(--text); opacity: .8; margin-top: 2px; }
-
-  /* Radar */
-  .radar-wrap { position: relative; background: #000; min-height: 340px; display: flex; align-items: center; justify-content: center; }
-  .radar-img { width: 100%; max-height: 440px; object-fit: contain; display: block; }
-  .radar-overlay { position: absolute; top: 8px; left: 8px; background: rgba(4,8,15,0.82); border: 1px solid var(--border); padding: 5px 10px; font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 1px; }
-  .radar-timestamp { position: absolute; bottom: 8px; right: 8px; background: rgba(4,8,15,0.82); border: 1px solid var(--border); padding: 4px 8px; font-family: var(--mono); font-size: 11px; color: var(--accent); }
-
-  /* Town List */
-  .status-bar { display: flex; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 11px; flex-wrap: wrap; }
+  /* ── Town List ── */
+  .town-panel { }
+  .status-bar {
+    display: flex; gap: 16px; padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 11px;
+  }
   .stat { display: flex; flex-direction: column; gap: 2px; }
-  .stat-label { color: var(--dim); letter-spacing: 1px; font-size: 10px; }
-  .stat-value { color: var(--accent); font-size: 15px; }
+  .stat-label { color: var(--dim); letter-spacing: 1px; }
+  .stat-value { color: var(--accent); font-size: 16px; }
   .stat-value.warn { color: var(--warn); }
   .stat-value.danger { color: var(--red); animation: pulse 1s infinite; }
 
-  .town-grid-container { overflow-y: auto; max-height: 280px; padding: 12px; }
+  .town-grid-container { overflow-y: auto; max-height: 320px; padding: 12px; }
   .county-block { margin-bottom: 12px; }
-  .county-name { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: var(--dim); padding: 4px 0; border-bottom: 1px solid var(--border); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+  .county-name {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+    color: var(--dim); padding: 4px 0; border-bottom: 1px solid var(--border);
+    margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+  }
   .county-pct { font-size: 10px; }
   .county-pct.warn { color: var(--warn); }
   .county-pct.danger { color: var(--red); }
   .county-pct.ok { color: var(--green); }
-  .posted-tag { font-size: 9px; background: rgba(0,255,157,0.12); border: 1px solid var(--green); color: var(--green); padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
 
   .town-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .town-chip { font-size: 12px; padding: 3px 8px; border-radius: 2px; font-family: var(--sans); font-weight: 500; border: 1px solid var(--border); color: var(--dim); background: rgba(255,255,255,0.02); }
-  .town-chip.alert { background: rgba(255,78,0,0.15); border-color: var(--accent2); color: #ff8c5a; box-shadow: 0 0 8px rgba(255,78,0,0.2); }
+  .town-chip {
+    font-size: 12px; padding: 3px 8px;
+    border-radius: 2px;
+    font-family: var(--sans); font-weight: 500;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    background: rgba(255,255,255,0.02);
+  }
+  .town-chip.alert {
+    background: rgba(255,78,0,0.15);
+    border-color: var(--accent2);
+    color: #ff8c5a;
+    box-shadow: 0 0 8px rgba(255,78,0,0.2);
+  }
 
-  .sheets-bar { padding: 7px 14px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 10px; color: var(--dim); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); flex-shrink: 0; }
-  .sdot.ok { background: var(--green); }
-  .sdot.warn { background: var(--warn); }
-  .sdot.err { background: var(--red); }
-
-  /* Right */
+  /* ── Right column: Notification compose ── */
   .right-col { display: flex; flex-direction: column; gap: 16px; }
-  .compose-body { padding: 14px; display: flex; flex-direction: column; gap: 11px; }
+
+  .compose-panel { flex: 1; }
+  .compose-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
 
   .field-label { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; color: var(--dim); margin-bottom: 4px; }
+
   .field-row { display: flex; gap: 8px; }
 
   input[type="text"], input[type="number"], input[type="datetime-local"], textarea {
-    width: 100%; background: var(--panel2); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--sans); font-size: 13px;
-    padding: 8px 10px; border-radius: 2px; outline: none; transition: border-color .2s;
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color .2s;
   }
   input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,212,255,0.1); }
   textarea { resize: vertical; font-family: var(--sans); line-height: 1.6; }
 
-  .webhook-display { background: rgba(0,255,157,0.06); border: 1px solid rgba(0,255,157,0.3); border-left: 3px solid var(--green); padding: 8px 10px; font-family: var(--mono); font-size: 10px; color: var(--green); border-radius: 2px; word-break: break-all; line-height: 1.5; }
+  .preview-box {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    font-family: var(--sans);
+    border-radius: 2px;
+    min-height: 100px;
+  }
+  .preview-box.stale { border-left-color: var(--dim); opacity: 0.5; }
 
-  .sheets-expiry-box { background: rgba(176,96,255,0.08); border: 1px solid rgba(176,96,255,0.4); border-radius: 2px; padding: 10px; font-size: 12px; color: var(--text); display: none; }
-  .sheets-expiry-box.active { display: block; }
-  .sheets-expiry-box .box-title { font-family: var(--mono); font-size: 10px; color: var(--purple); letter-spacing: 1px; margin-bottom: 6px; }
-
-  .expiry-bar { background: var(--panel2); border: 1px solid var(--border); border-radius: 2px; padding: 8px 10px; font-family: var(--mono); font-size: 11px; display: flex; align-items: center; gap: 8px; }
-  .expiry-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .expiry-bar {
+    background: var(--panel2); border: 1px solid var(--border);
+    border-radius: 2px; padding: 8px 10px;
+    font-family: var(--mono); font-size: 11px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .expiry-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
   .expiry-dot.warning { background: var(--warn); }
   .expiry-dot.expired { background: var(--red); }
-  .expiry-label { color: var(--dim); flex-shrink: 0; }
+  .expiry-label { color: var(--dim); }
   .expiry-value { color: var(--accent); flex: 1; }
 
   .btn-row { display: flex; gap: 8px; }
-  .btn { font-family: var(--mono); font-size: 12px; letter-spacing: 1px; padding: 9px 14px; border: none; cursor: pointer; border-radius: 2px; transition: all .2s; flex: 1; text-align: center; }
-  .btn-primary { background: var(--accent); color: var(--bg); font-weight: 700; }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 9px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all .2s;
+    flex: 1;
+    text-align: center;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+  }
   .btn-primary:hover { box-shadow: 0 0 20px rgba(0,212,255,0.5); filter: brightness(1.1); }
   .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
-  .btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+  }
   .btn-danger:hover { background: rgba(255,45,85,0.15); }
-  .btn-secondary { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--dim);
+    border: 1px solid var(--border);
+  }
   .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-  .log-body { padding: 8px 12px; max-height: 150px; overflow-y: auto; }
-  .log-entry { font-family: var(--mono); font-size: 11px; padding: 4px 0; border-bottom: 1px solid rgba(26,42,64,0.5); display: flex; gap: 10px; }
+  /* n8n URL */
+  .n8n-row { display: flex; gap: 6px; align-items: center; }
+  .n8n-row input { font-family: var(--mono); font-size: 11px; }
+
+  /* Log */
+  .log-panel { }
+  .log-body { padding: 8px 12px; max-height: 160px; overflow-y: auto; }
+  .log-entry {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(26,42,64,0.5);
+    display: flex; gap: 10px;
+  }
   .log-time { color: var(--dim); flex-shrink: 0; }
   .log-msg { color: var(--text); }
   .log-msg.ok { color: var(--green); }
   .log-msg.err { color: var(--red); }
   .log-msg.info { color: var(--accent); }
   .log-msg.warn { color: var(--warn); }
-  .log-msg.purple { color: var(--purple); }
 
-  .loader { display: flex; align-items: center; justify-content: center; padding: 40px; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
-  .spin { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  /* Loader */
+  .loader {
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px; gap: 8px;
+    font-family: var(--mono); font-size: 12px; color: var(--dim);
+  }
+  .spin {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(4,8,15,0.88); backdrop-filter: blur(6px); z-index: 200; align-items: center; justify-content: center; }
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(4,8,15,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    align-items: center; justify-content: center;
+  }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--panel); border: 1px solid var(--accent); border-radius: 4px; padding: 24px; max-width: 440px; width: 92%; box-shadow: 0 0 60px rgba(0,212,255,0.2); }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 24px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 0 60px rgba(0,212,255,0.2);
+  }
   .modal h3 { font-family: var(--mono); color: var(--accent); letter-spacing: 2px; margin-bottom: 8px; }
-  .modal p { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 12px; }
-  .modal-preview { background: var(--panel2); border: 1px solid var(--border); border-left: 3px solid var(--warn); padding: 12px; font-size: 12px; line-height: 1.7; color: var(--warn); white-space: pre-wrap; border-radius: 2px; margin-bottom: 16px; max-height: 200px; overflow-y: auto; }
+  .modal p { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 16px; }
   .modal-btns { display: flex; gap: 8px; }
 
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 12px 16px; font-family: var(--mono); font-size: 12px; color: var(--text); border-radius: 2px; transform: translateX(120%); transition: transform .3s ease; z-index: 300; max-width: 340px; }
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    font-family: var(--mono); font-size: 12px; color: var(--text);
+    border-radius: 2px;
+    transform: translateX(120%);
+    transition: transform .3s ease;
+    z-index: 300;
+    max-width: 320px;
+  }
   .toast.show { transform: translateX(0); }
   .toast.error { border-left-color: var(--red); }
   .toast.success { border-left-color: var(--green); }
 
-  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; } ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-  @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
+<!-- ── Header ── -->
 <header>
-  <div class="logo"><div class="logo-dot"></div>RADAR ALERT SYS</div>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    RADAR ALERT SYS
+  </div>
   <div class="header-right">
     <div class="clock" id="clock">--:--:--</div>
-    <button class="hbtn hbtn-notif" id="notifBtn" onclick="toggleNotification()">
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotification()">
       🔔 訂閱通知
-      <span class="notif-badge" id="notifBadge">!</span>
+      <span class="notif-badge" id="notifBadge">1</span>
     </button>
-    <button class="hbtn hbtn-refresh" onclick="manualRefresh()">↻ 刷新</button>
+    <button class="refresh-btn" onclick="fetchData()">↻ 重新整理</button>
   </div>
 </header>
 
+<!-- ── Main ── -->
 <div class="main">
+
+  <!-- Left Column -->
   <div class="left-col">
 
+    <!-- Alert Banner -->
     <div class="alert-banner" id="alertBanner">
       <div class="alert-icon">⚠️</div>
       <div class="alert-text">
-        <strong id="alertBannerTitle">偵測到預警條件觸發（閾值 1/3）</strong>
-        <p id="alertBannerDesc">請確認右側通知內容並發送</p>
-      </div>
-    </div>
-
-    <div class="posted-banner" id="postedBanner">
-      <div class="alert-icon">✅</div>
-      <div class="alert-text">
-        <strong>本次警示已在有效期內發布</strong>
-        <p id="postedBannerDesc">警示訊息已發布，有效期尚未過期</p>
+        <strong id="alertBannerTitle">偵測到預警條件觸發</strong>
+        <p id="alertBannerDesc">請確認下方通知內容並發送</p>
       </div>
     </div>
 
@@ -212,93 +424,108 @@
     <div class="panel">
       <div class="panel-header">
         <span class="panel-title">🛰 雷達迴波圖 — CV1 全臺</span>
-        <span style="font-family:var(--mono);font-size:10px;color:var(--dim)">AUTO 5MIN</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--dim)" id="radarRefreshLabel">AUTO REFRESH 5MIN</span>
       </div>
       <div class="radar-wrap">
-        <img class="radar-img" id="radarImg" src="" alt="雷達" onerror="this.style.opacity=0.3">
+        <img class="radar-img" id="radarImg" src="" alt="雷達迴波圖" onerror="this.style.opacity=0.3">
         <div class="radar-overlay">CWA / CV1 TW 1000</div>
         <div class="radar-timestamp" id="radarTs">--</div>
       </div>
     </div>
 
-    <!-- Town list -->
-    <div class="panel">
+    <!-- Town List -->
+    <div class="panel town-panel">
       <div class="panel-header">
         <span class="panel-title">📍 即時鄉鎮預警列表</span>
         <span style="font-family:var(--mono);font-size:10px;color:var(--dim)" id="dataTs">--</span>
       </div>
       <div class="status-bar">
-        <div class="stat"><span class="stat-label">資料時間</span><span class="stat-value" id="statTime">--</span></div>
-        <div class="stat"><span class="stat-label">總鄉鎮數</span><span class="stat-value" id="statTotal">0</span></div>
-        <div class="stat"><span class="stat-label">預警鄉鎮</span><span class="stat-value warn" id="statAlert">0</span></div>
-        <div class="stat"><span class="stat-label">觸發縣市</span><span class="stat-value danger" id="statCounty">0</span></div>
-        <div class="stat"><span class="stat-label">閾值</span><span class="stat-value" style="color:var(--purple)">＞1/3</span></div>
+        <div class="stat">
+          <span class="stat-label">DATA TIME</span>
+          <span class="stat-value" id="statTime">--</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">總鄉鎮數</span>
+          <span class="stat-value" id="statTotal">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">預警鄉鎮</span>
+          <span class="stat-value warn" id="statAlert">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">觸發縣市</span>
+          <span class="stat-value danger" id="statCounty">0</span>
+        </div>
       </div>
       <div class="town-grid-container" id="townGrid">
         <div class="loader"><div class="spin"></div> 載入資料中...</div>
       </div>
-      <div class="sheets-bar">
-        <div class="sdot" id="sheetsDot"></div>
-        <span id="sheetsStatus">Google Sheets 有效期：讀取中...</span>
-      </div>
     </div>
+
   </div>
 
-  <!-- Right -->
+  <!-- Right Column -->
   <div class="right-col">
-    <div class="panel">
+
+    <!-- Compose -->
+    <div class="panel compose-panel">
       <div class="panel-header">
         <span class="panel-title">📣 警示發送</span>
         <span id="composeStatus" style="font-family:var(--mono);font-size:10px;color:var(--dim)">STANDBY</span>
       </div>
       <div class="compose-body">
 
+        <!-- n8n URL -->
         <div>
-          <div class="field-label">N8N WEBHOOK（固定）</div>
-          <div class="webhook-display">🔗 https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/<br>webhook-test/warn</div>
+          <div class="field-label">N8N WEBHOOK URL</div>
+          <div class="n8n-row">
+            <input type="text" id="n8nUrl" value="https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/webhook-test/1" readonly style="color: var(--dim); background: rgba(255,255,255,0.05);" />
+          </div>
         </div>
 
-        <div class="sheets-expiry-box" id="sheetsExpiryBox">
-          <div class="box-title">📋 SHEETS 有效期記錄</div>
-          <div id="sheetsExpiryDetail"></div>
-        </div>
-
+        <!-- 縣市 (auto-filled) -->
         <div>
-          <div class="field-label">觸發縣市（自動填入，可修改）</div>
+          <div class="field-label">觸發縣市 (自動填入，可人工修改)</div>
           <input type="text" id="msgCounty" placeholder="例：高雄市、屏東縣" />
         </div>
 
+        <!-- 人工輸入時數 & 有效期 -->
         <div class="field-row">
           <div style="flex:1">
             <div class="field-label">預估小時數</div>
-            <input type="number" id="msgHours" min="1" max="12" value="1" />
+            <input type="number" id="msgHours" min="1" max="12" value="1" style="width:100%"/>
           </div>
           <div style="flex:2">
-            <div class="field-label">有效期至（UTC-4）</div>
-            <input type="datetime-local" id="msgUntil" />
+            <div class="field-label">有效期至</div>
+            <input type="datetime-local" id="msgUntil" style="width:100%"/>
           </div>
         </div>
 
+        <!-- Preview -->
         <div>
-          <div class="field-label">訊息預覽（可人工修改）</div>
+          <div class="field-label">訊息預覽 (可直接編輯)</div>
           <textarea id="msgPreview" rows="7"></textarea>
         </div>
 
+        <!-- Expiry countdown -->
         <div class="expiry-bar">
           <div class="expiry-dot" id="expiryDot"></div>
-          <span class="expiry-label">警示倒數：</span>
+          <span class="expiry-label">警示有效倒數：</span>
           <span class="expiry-value" id="expiryCountdown">尚未設定</span>
         </div>
 
+        <!-- Buttons -->
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="regenerateMsg()">⟳ 重新產生</button>
           <button class="btn btn-primary" id="sendBtn" onclick="confirmSend()" disabled>▶ 確認發送</button>
         </div>
         <button class="btn btn-danger" style="width:100%" onclick="discardAlert()">✕ 丟棄本次警示</button>
+
       </div>
     </div>
 
-    <div class="panel">
+    <!-- Log -->
+    <div class="panel log-panel">
       <div class="panel-header">
         <span class="panel-title">📋 操作紀錄</span>
         <button onclick="clearLog()" style="font-family:var(--mono);font-size:10px;background:none;border:none;color:var(--dim);cursor:pointer">清除</button>
@@ -307,14 +534,16 @@
         <div class="log-entry"><span class="log-time">--:--:--</span><span class="log-msg info">系統啟動</span></div>
       </div>
     </div>
+
   </div>
 </div>
 
+<!-- Modal: confirm send -->
 <div class="modal-overlay" id="sendModal">
   <div class="modal">
     <h3>⚠ 確認發送</h3>
-    <p>即將 POST 至 n8n webhook，請確認訊息：</p>
-    <div class="modal-preview" id="modalPreview"></div>
+    <p>即將透過 n8n webhook 發送以下警示訊息，請確認內容正確。</p>
+    <pre id="modalPreview" style="font-size:12px;line-height:1.6;color:var(--warn);margin-bottom:16px;white-space:pre-wrap;"></pre>
     <div class="modal-btns">
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal()">取消</button>
       <button class="btn btn-primary" style="flex:1" onclick="doSend()">確認發送</button>
@@ -322,245 +551,124 @@
   </div>
 </div>
 
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════
-// Constants
-// ══════════════════════════════════════
-const DATA_URL    = 'https://watch.ncdr.nat.gov.tw/wh/dv_ncdrnowcast_town';
-const RADAR_URL   = 'https://www.cwa.gov.tw/Data/radar/CV1_TW_1000.png';
-const N8N_WEBHOOK = 'https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/webhook-test/1';
-const SHEET_ID    = '1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM';
-const SHEET_CSV   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-const REFRESH_MS  = 5 * 60 * 1000;
-const ALERT_TTL   = 60 * 60 * 1000;
-const THRESHOLD   = 1 / 3;          // ← 閾值：超過 1/3
-const TZ_OFFSET   = -4 * 60 * 60 * 1000; // UTC-4
-
-// ══════════════════════════════════════
+// ─────────────────────────────────
 // State
-// ══════════════════════════════════════
-let allTowns        = [];
+// ─────────────────────────────────
+const DATA_URL = 'https://watch.ncdr.nat.gov.tw/wh/dv_ncdrnowcast_town';
+const RADAR_URL = 'https://www.cwa.gov.tw/Data/radar/CV1_TW_1000.png';
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min
+const ALERT_TTL = 60 * 60 * 1000;       // 1 hr discard
+
+let allTowns = [];
 let alertedCounties = [];
-let alertTimestamp  = null;
-let expiryTimer     = null;
-let sheetsRecords   = [];
+let alertTimestamp = null;
+let expiryTimer = null;
+let notifPermission = Notification?.permission || 'default';
+let radarTimer, dataTimer;
 
-// ══════════════════════════════════════
-// Time helpers (UTC-4)
-// ══════════════════════════════════════
-const pad = n => String(n).padStart(2,'0');
-
-function nowUTC4() {
-  return new Date(Date.now() + TZ_OFFSET);
-}
-
-// Format any Date as UTC-4 display string
-function fmtUTC4(d) {
-  if (!d || isNaN(d)) return '?';
-  const u = new Date(d.getTime() + TZ_OFFSET);
-  return `${u.getUTCFullYear()}/${pad(u.getUTCMonth()+1)}/${pad(u.getUTCDate())} ${pad(u.getUTCHours())}:${pad(u.getUTCMinutes())}`;
-}
-
-// Parse a date string that is in UTC-4 timezone → return UTC Date object
-function parseUTC4String(str) {
-  if (!str || !str.trim()) return null;
-  str = str.trim();
-  // If has timezone info, parse directly
-  if (/[Z]$/.test(str) || /[+\-]\d{2}:\d{2}$/.test(str)) return new Date(str);
-  // Assume the string is in UTC-4 local time, convert to UTC
-  const base = new Date(str.replace(' ', 'T'));
-  if (isNaN(base)) return null;
-  return new Date(base.getTime() - TZ_OFFSET); // UTC-4 → UTC
-}
-
-// ══════════════════════════════════════
+// ─────────────────────────────────
 // Clock
-// ══════════════════════════════════════
+// ─────────────────────────────────
 function updateClock() {
-  const n = nowUTC4();
+  const now = new Date();
   document.getElementById('clock').textContent =
-    `UTC-4  ${pad(n.getUTCHours())}:${pad(n.getUTCMinutes())}:${pad(n.getUTCSeconds())}`;
+    now.toLocaleTimeString('zh-TW', { hour12: false });
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// ══════════════════════════════════════
-// Log & Toast
-// ══════════════════════════════════════
-function log(msg, type='') {
-  const n = nowUTC4();
-  const t = `${pad(n.getUTCHours())}:${pad(n.getUTCMinutes())}:${pad(n.getUTCSeconds())}`;
+// ─────────────────────────────────
+// Log
+// ─────────────────────────────────
+function log(msg, type = '') {
+  const now = new Date().toLocaleTimeString('zh-TW', { hour12: false });
   const body = document.getElementById('logBody');
   const div = document.createElement('div');
   div.className = 'log-entry';
-  div.innerHTML = `<span class="log-time">${t}</span><span class="log-msg ${type}">${msg}</span>`;
+  div.innerHTML = `<span class="log-time">${now}</span><span class="log-msg ${type}">${msg}</span>`;
   body.prepend(div);
 }
 function clearLog() { document.getElementById('logBody').innerHTML = ''; }
 
-function showToast(msg, type='') {
+// ─────────────────────────────────
+// Toast
+// ─────────────────────────────────
+function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast ' + type + ' show';
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// ══════════════════════════════════════
-// Notifications
-// ══════════════════════════════════════
+// ─────────────────────────────────
+// Notification permission
+// ─────────────────────────────────
 async function toggleNotification() {
-  if (!('Notification' in window)) { showToast('瀏覽器不支援通知', 'error'); return; }
+  if (!('Notification' in window)) {
+    showToast('此瀏覽器不支援通知功能', 'error');
+    return;
+  }
   if (Notification.permission === 'granted') {
     showToast('通知已訂閱 ✓', 'success');
     document.getElementById('notifBtn').classList.add('active');
-    document.getElementById('notifBtn').textContent = '🔔 已訂閱';
+    document.getElementById('notifBtn').textContent = '🔔 已訂閱通知';
+    log('通知已訂閱', 'ok');
     return;
   }
-  const p = await Notification.requestPermission();
-  if (p === 'granted') {
+  const perm = await Notification.requestPermission();
+  notifPermission = perm;
+  if (perm === 'granted') {
     document.getElementById('notifBtn').classList.add('active');
-    document.getElementById('notifBtn').textContent = '🔔 已訂閱';
+    document.getElementById('notifBtn').innerHTML = '🔔 已訂閱通知';
     showToast('通知訂閱成功！', 'success');
-    log('通知授權成功', 'ok');
+    log('使用者授權通知', 'ok');
   } else {
-    showToast('通知授權被拒', 'error');
-    log('通知授權被拒', 'err');
+    showToast('通知授權被拒絕', 'error');
+    log('通知授權拒絕', 'err');
   }
 }
+
 function sendBrowserNotif(title, body) {
-  if (Notification?.permission !== 'granted') return;
-  new Notification(title, { body });
+  if (Notification.permission !== 'granted') return;
+  new Notification(title, { body, icon: 'https://www.cwa.gov.tw/favicon.ico' });
 }
 
-// ══════════════════════════════════════
-// Radar
-// ══════════════════════════════════════
+// ─────────────────────────────────
+// Radar image
+// ─────────────────────────────────
 function refreshRadar() {
-  document.getElementById('radarImg').src = RADAR_URL + '?t=' + Date.now();
-  const n = nowUTC4();
-  document.getElementById('radarTs').textContent = `更新 ${pad(n.getUTCHours())}:${pad(n.getUTCMinutes())} (UTC-4)`;
+  const img = document.getElementById('radarImg');
+  img.src = RADAR_URL + '?t=' + Date.now();
+  const ts = document.getElementById('radarTs');
+  ts.textContent = new Date().toLocaleTimeString('zh-TW', { hour12: false });
   log('雷達圖更新', 'info');
 }
 
-// ══════════════════════════════════════
-// Google Sheets — read expiry column
-// ══════════════════════════════════════
-function parseCSVLine(line) {
-  const res = []; let cur = ''; let q = false;
-  for (const c of line) {
-    if (c === '"') q = !q;
-    else if (c === ',' && !q) { res.push(cur); cur = ''; }
-    else cur += c;
-  }
-  res.push(cur);
-  return res;
-}
-
-async function fetchSheets() {
-  const dot = document.getElementById('sheetsDot');
-  const lbl = document.getElementById('sheetsStatus');
-  dot.className = 'sdot warn';
-  lbl.textContent = 'Google Sheets：讀取中...';
-
-  const proxies = [
-    'https://corsproxy.io/?' + encodeURIComponent(SHEET_CSV),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_CSV),
-  ];
-  let text = null;
-  for (const url of proxies) {
-    try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(9000) });
-      if (r.ok) { text = await r.text(); break; }
-    } catch {}
-  }
-
-  if (!text) {
-    dot.className = 'sdot err';
-    lbl.textContent = 'Google Sheets：讀取失敗（CORS 限制）';
-    log('Sheets 讀取失敗', 'err');
-    return;
-  }
-
-  const lines = text.trim().split('\n').map(l => l.replace(/\r/, ''));
-  if (lines.length < 2) { dot.className = 'sdot err'; lbl.textContent = 'Sheets：空白'; return; }
-
-  const headers = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
-  const idIdx  = headers.findIndex(h => h === 'id');
-  const exIdx  = headers.findIndex(h => h.includes('有效') || h.includes('expir') || h.includes('valid'));
-  const msgIdx = headers.findIndex(h => h.includes('訊息') || h.includes('msg') || h.includes('message'));
-
-  if (exIdx === -1) {
-    dot.className = 'sdot err';
-    lbl.textContent = 'Sheets：找不到「有效期」欄位';
-    log('Sheets：找不到有效期欄位，headers=' + headers.join(','), 'err');
-    return;
-  }
-
-  sheetsRecords = [];
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    const cols = parseCSVLine(lines[i]);
-    sheetsRecords.push({
-      id:      idIdx  >= 0 ? cols[idIdx]?.trim()  : String(i),
-      exRaw:   cols[exIdx]?.trim()  || '',
-      expiry:  parseUTC4String(cols[exIdx]?.trim() || ''),
-      message: msgIdx >= 0 ? cols[msgIdx]?.trim() : ''
-    });
-  }
-
-  const now = new Date();
-  const active = sheetsRecords.filter(r => r.expiry && r.expiry > now);
-  dot.className = active.length > 0 ? 'sdot ok' : 'sdot';
-  lbl.textContent = `Sheets：${sheetsRecords.length} 筆｜${active.length} 筆有效（UTC-4）`;
-  log(`Sheets 載入 ${sheetsRecords.length} 筆，${active.length} 筆有效`, 'purple');
-
-  renderSheetsExpiryBox(active);
-}
-
-function renderSheetsExpiryBox(activeRecs) {
-  const box = document.getElementById('sheetsExpiryBox');
-  const det = document.getElementById('sheetsExpiryDetail');
-  if (!activeRecs.length) { box.classList.remove('active'); return; }
-  box.classList.add('active');
-  det.innerHTML = activeRecs.map(r =>
-    `<div style="padding:4px 0;border-bottom:1px solid rgba(176,96,255,0.2);line-height:1.5">
-       <span style="color:var(--purple);font-family:var(--mono);font-size:10px">${r.id}</span>
-       <span style="color:var(--green);font-size:11px;margin-left:8px">✓ 有效至 ${fmtUTC4(r.expiry)}（UTC-4）</span>
-       ${r.message ? `<br><span style="color:var(--dim);font-size:11px">${r.message.slice(0,80)}</span>` : ''}
-     </div>`
-  ).join('');
-}
-
-// Check if a county has an active sheets record
-function getActiveSheetForCounty(countyName) {
-  const now = new Date();
-  return sheetsRecords.find(r => {
-    if (!r.expiry || r.expiry <= now) return false;
-    return (r.id + ' ' + r.message).includes(countyName);
-  }) || null;
-}
-
-// ══════════════════════════════════════
-// Town data
-// ══════════════════════════════════════
-function parseTownCSV(text) {
+// ─────────────────────────────────
+// Fetch town data (CSV via proxy)
+// ─────────────────────────────────
+function parseCSV(text) {
   const lines = text.trim().split('\n');
   if (lines.length < 2) return [];
+  // find header
   const headers = lines[0].replace(/\r/,'').split(',').map(h => h.trim());
-  return lines.slice(1).map(l => {
-    const vals = l.replace(/\r/,'').split(',');
-    const o = {};
-    headers.forEach((h,i) => o[h] = (vals[i]||'').trim());
-    o.level = parseInt(o.level) || 0;
-    return o;
+  return lines.slice(1).map(line => {
+    const vals = line.replace(/\r/,'').split(',');
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').trim());
+    obj.level = parseInt(obj.level) || 0;
+    return obj;
   }).filter(r => r.id);
 }
 
 async function fetchData() {
-  log('讀取鄉鎮預警資料...', 'info');
+  log('正在讀取鄉鎮預警資料...', 'info');
   try {
+    // Try CORS proxy
     const proxies = [
       'https://corsproxy.io/?' + encodeURIComponent(DATA_URL),
       'https://api.allorigins.win/raw?url=' + encodeURIComponent(DATA_URL),
@@ -568,268 +676,305 @@ async function fetchData() {
     let text = null;
     for (const url of proxies) {
       try {
-        const r = await fetch(url, { signal: AbortSignal.timeout(9000) });
-        if (r.ok) { text = await r.text(); break; }
+        const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+        if (res.ok) { text = await res.text(); break; }
       } catch {}
     }
-    if (!text) throw new Error('無法連線');
-    const towns = parseTownCSV(text);
-    if (!towns.length) throw new Error('空資料');
+    if (!text) throw new Error('無法連線至資料來源');
+
+    const towns = parseCSV(text);
+    if (!towns.length) throw new Error('資料解析失敗或空資料');
     allTowns = towns;
     processData(towns);
-    log(`載入 ${towns.length} 筆`, 'ok');
+    log(`成功載入 ${towns.length} 筆鄉鎮資料`, 'ok');
+
   } catch (err) {
-    log('資料載入失敗：' + err.message + '，使用示範資料', 'err');
+    log('資料載入失敗：' + err.message, 'err');
+    // fallback: use sample data with some alerts for demo
     useSampleData();
   }
 }
 
 function useSampleData() {
-  const n = nowUTC4();
-  const ts = `${n.getUTCFullYear()}-${pad(n.getUTCMonth()+1)}-${pad(n.getUTCDate())} ${pad(n.getUTCHours())}:${pad(n.getUTCMinutes())}`;
+  log('使用範例資料 (示範用)', 'warn');
+  const now = new Date();
+  const ts = now.toISOString().slice(0,16).replace('T',' ');
+  // build sample — inject some alerts in 高雄 & 屏東 for demo
   const raw = [
-    // 連江 0/2 → 不觸發
+    // 連江
     {id:'900701',level:0,timestamp:ts,cid:'9007',city:'連江縣',town:'南竿鄉'},
     {id:'900702',level:0,timestamp:ts,cid:'9007',city:'連江縣',town:'北竿鄉'},
-    // 宜蘭 0/4 → 不觸發
+    // 宜蘭
     {id:'1000201',level:0,timestamp:ts,cid:'10002',city:'宜蘭縣',town:'宜蘭市'},
     {id:'1000202',level:0,timestamp:ts,cid:'10002',city:'宜蘭縣',town:'羅東鎮'},
     {id:'1000203',level:0,timestamp:ts,cid:'10002',city:'宜蘭縣',town:'蘇澳鎮'},
-    {id:'1000204',level:0,timestamp:ts,cid:'10002',city:'宜蘭縣',town:'頭城鎮'},
-    // 高雄 3/5 = 60% → 觸發 ✓
+    // 高雄 — 觸發
     {id:'6400101',level:1,timestamp:ts,cid:'64001',city:'高雄市',town:'三民區'},
     {id:'6400102',level:1,timestamp:ts,cid:'64001',city:'高雄市',town:'苓雅區'},
     {id:'6400103',level:1,timestamp:ts,cid:'64001',city:'高雄市',town:'前鎮區'},
     {id:'6400104',level:0,timestamp:ts,cid:'64001',city:'高雄市',town:'鳳山區'},
-    {id:'6400105',level:0,timestamp:ts,cid:'64001',city:'高雄市',town:'左營區'},
-    // 屏東 2/4 = 50% → 觸發 ✓
+    {id:'6400105',level:1,timestamp:ts,cid:'64001',city:'高雄市',town:'左營區'},
+    // 屏東 — 觸發
     {id:'1000401',level:1,timestamp:ts,cid:'10004',city:'屏東縣',town:'屏東市'},
     {id:'1000402',level:1,timestamp:ts,cid:'10004',city:'屏東縣',town:'潮州鎮'},
     {id:'1000403',level:0,timestamp:ts,cid:'10004',city:'屏東縣',town:'東港鎮'},
-    {id:'1000404',level:0,timestamp:ts,cid:'10004',city:'屏東縣',town:'恆春鎮'},
-    // 台南 1/3 = 33.3% → 不觸發 (需嚴格大於)
+    // 台南
     {id:'6700101',level:1,timestamp:ts,cid:'67001',city:'台南市',town:'中西區'},
     {id:'6700102',level:0,timestamp:ts,cid:'67001',city:'台南市',town:'東區'},
-    {id:'6700103',level:0,timestamp:ts,cid:'67001',city:'台南市',town:'南區'},
+    {id:'6700103',level:1,timestamp:ts,cid:'67001',city:'台南市',town:'南區'},
   ];
   allTowns = raw;
   processData(raw);
-  log('示範資料：高雄3/5、屏東2/4 超過1/3觸發', 'warn');
 }
 
-// ══════════════════════════════════════
-// Process data
-// ══════════════════════════════════════
+// ─────────────────────────────────
+// Process & render
+// ─────────────────────────────────
 function processData(towns) {
+  // Group by county
   const counties = {};
   towns.forEach(t => {
-    if (!counties[t.city]) counties[t.city] = { total:0, alerted:[], normal:[] };
+    if (!counties[t.city]) counties[t.city] = { total: 0, alerted: [], normal: [] };
     counties[t.city].total++;
     if (t.level === 1) counties[t.city].alerted.push(t.town);
     else counties[t.city].normal.push(t.town);
   });
 
-  // Threshold: strictly greater than 1/3
+  // Find triggered counties (>50%)
   const triggered = Object.entries(counties)
-    .filter(([,v]) => v.total > 0 && v.alerted.length / v.total > THRESHOLD)
+    .filter(([, v]) => v.alerted.length > v.total / 3)
     .map(([name]) => name);
 
   // Stats
-  document.getElementById('statTotal').textContent  = towns.length;
-  document.getElementById('statAlert').textContent  = towns.filter(t=>t.level===1).length;
+  const totalAlert = towns.filter(t => t.level === 1).length;
+  document.getElementById('statTotal').textContent = towns.length;
+  document.getElementById('statAlert').textContent = totalAlert;
   document.getElementById('statCounty').textContent = triggered.length;
-  const tsVal = towns[0]?.timestamp || '--';
-  document.getElementById('statTime').textContent   = tsVal.slice(11,16);
-  document.getElementById('dataTs').textContent     = 'DATA: ' + tsVal;
 
-  // Render
+  // Timestamp
+  const tsVal = towns[0]?.timestamp || '--';
+  document.getElementById('statTime').textContent = tsVal.slice(11,16);
+  document.getElementById('dataTs').textContent = 'DATA: ' + tsVal;
+
+  // Render grid
   const grid = document.getElementById('townGrid');
   grid.innerHTML = '';
   Object.entries(counties).forEach(([city, data]) => {
-    const pct     = data.total > 0 ? Math.round(data.alerted.length / data.total * 100) : 0;
-    const isTrig  = triggered.includes(city);
-    const pctCls  = isTrig ? 'danger' : pct > 0 ? 'warn' : 'ok';
-    const sheet   = getActiveSheetForCounty(city);
-    const tag     = sheet
-      ? `<span class="posted-tag">✅ 已發布至 ${fmtUTC4(sheet.expiry)}</span>`
-      : (isTrig ? `<span class="posted-tag" style="border-color:var(--warn);color:var(--warn);background:rgba(255,204,0,0.1)">⚠ 待發送</span>` : '');
+    const pct = data.total > 0 ? Math.round(data.alerted.length / data.total * 100) : 0;
+    const isTrig = triggered.includes(city);
+    const pctClass = isTrig ? 'danger' : pct > 0 ? 'warn' : 'ok';
 
-    const b = document.createElement('div');
-    b.className = 'county-block';
-    b.innerHTML = `
+    const block = document.createElement('div');
+    block.className = 'county-block';
+    block.innerHTML = `
       <div class="county-name">
-        <span>${city} ${tag}</span>
-        <span class="county-pct ${pctCls}">${data.alerted.length}/${data.total} (${pct}%)${isTrig?' ▲':''}</span>
+        ${city}
+        <span class="county-pct ${pctClass}">${data.alerted.length}/${data.total} (${pct}%)${isTrig?' ⚠':''}</span>
       </div>
       <div class="town-chips">
         ${[...data.alerted.map(t=>`<span class="town-chip alert">▲ ${t}</span>`),
            ...data.normal.map(t=>`<span class="town-chip">${t}</span>`)].join('')}
       </div>`;
-    grid.appendChild(b);
+    grid.appendChild(block);
   });
 
-  alertedCounties = triggered;
-
-  // Categorize triggered counties
-  const alreadyPosted = triggered.filter(c => getActiveSheetForCounty(c));
-  const needSend      = triggered.filter(c => !getActiveSheetForCounty(c));
-
-  // Update UI state
-  if (needSend.length > 0) {
-    // New alert needed
-    document.getElementById('alertBanner').classList.add('active');
-    document.getElementById('postedBanner').classList.remove('active');
-    document.getElementById('alertBannerTitle').textContent =
-      `⚠ ${needSend.length} 縣市超過 1/3 達標（新預警）`;
-    document.getElementById('alertBannerDesc').textContent =
-      `新增：${needSend.join('、')}` + (alreadyPosted.length ? `　已發布：${alreadyPosted.join('、')}` : '');
-    triggerAlert([...needSend, ...alreadyPosted]);
-
-  } else if (alreadyPosted.length > 0) {
-    // All triggered are already covered
-    document.getElementById('alertBanner').classList.remove('active');
-    document.getElementById('postedBanner').classList.add('active');
-    const expStrs = alreadyPosted.map(c => {
-      const s = getActiveSheetForCounty(c);
-      return s ? `${c}（至 ${fmtUTC4(s.expiry)}）` : c;
-    });
-    document.getElementById('postedBannerDesc').textContent =
-      '有效期內已發布：' + expStrs.join('、') + '（UTC-4）';
-    document.getElementById('composeStatus').textContent = 'POSTED ✓';
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('msgCounty').value = alreadyPosted.join('、');
-    regenerateMsg();
-    log(`已發布縣市（有效期內）：${alreadyPosted.join('、')}`, 'purple');
-    sendBrowserNotif('📋 警示有效期內', `${alreadyPosted.join('、')} 已在 Sheets 有效期內，請確認是否需重送`);
-
+  // Handle alert trigger
+  if (triggered.length > 0) {
+    triggerAlert(triggered);
   } else {
-    // Nothing triggered
     document.getElementById('alertBanner').classList.remove('active');
-    document.getElementById('postedBanner').classList.remove('active');
     document.getElementById('composeStatus').textContent = 'STANDBY';
     document.getElementById('sendBtn').disabled = true;
   }
+
+  alertedCounties = triggered;
 }
 
-// ══════════════════════════════════════
+// ─────────────────────────────────
 // Alert trigger
-// ══════════════════════════════════════
-function triggerAlert(counties) {
+// ─────────────────────────────────
+// 修改後的 triggerAlert 函式
+async function triggerAlert(counties) {
+  log('正在檢查線上警示有效期 (試算表)...', 'info');
+  let activeAlerts = [];
+  let newAlerts = [];
+
+  try {
+    // 透過 Google Visualization API 將公開試算表轉為 CSV 讀取
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM/gviz/tq?tqx=out:csv';
+    const res = await fetch(sheetUrl);
+    const text = await res.text();
+
+    // 簡易解析 CSV (過濾掉引號)
+    const rows = text.split('\n').slice(1).map(row => row.split(',').map(v => v.replace(/(^"|"$)/g, '')));
+    const nowMs = Date.now();
+
+    counties.forEach(county => {
+      // 依序為: id(欄位0), 有效期(欄位1), 訊息(欄位2)
+      const record = rows.find(r => r[0] === county);
+      if (record && record[1]) {
+        // 試算表為 UTC-4，將 "YYYY-MM-DD HH:mm:ss" 轉為 "YYYY-MM-DDTHH:mm:ss-04:00" 給 Date 物件解析
+        const expStr = record[1].replace(' ', 'T') + '-04:00';
+        const expTime = new Date(expStr).getTime();
+
+        if (expTime > nowMs) {
+          activeAlerts.push(county);
+        } else {
+          newAlerts.push(county);
+        }
+      } else {
+        newAlerts.push(county);
+      }
+    });
+  } catch (err) {
+    log('讀取試算表失敗，繼續原有流程', 'err');
+    newAlerts = counties;
+  }
+
+  // 如果有縣市仍在有效期內，顯示網頁通知與推播
+  if (activeAlerts.length > 0) {
+    const msg = `${activeAlerts.join('、')} 尚在預警有效期內`;
+    showToast(msg, 'warn');
+    log(msg + '，已發布網頁通知', 'warn');
+    sendBrowserNotif('ℹ️ 警示重疊', msg);
+  }
+
+  // 如果過濾後沒有新的縣市需要發送，就提早結束不進入草稿匣
+  if (newAlerts.length === 0) return;
+
+  // 針對真正需要新發布的縣市繼續流程
+  counties = newAlerts;
   alertTimestamp = Date.now();
+
+  const banner = document.getElementById('alertBanner');
+  banner.classList.add('active');
+  document.getElementById('alertBannerTitle').textContent =
+    `偵測到 ${counties.length} 個縣市超過 1/3 鄉鎮達成預警條件`;
+  document.getElementById('alertBannerDesc').textContent =
+    counties.join('、');
+
   document.getElementById('composeStatus').textContent = 'ALERT ACTIVE';
   document.getElementById('sendBtn').disabled = false;
+
+  // Auto-fill compose
   document.getElementById('msgCounty').value = counties.join('、');
 
-  // Default expiry = now + 1h
-  const exp = new Date(Date.now() + ALERT_TTL + TZ_OFFSET); // shift to UTC-4 for display
+  // Set default expiry = now + 1h
+  const exp = new Date(Date.now() + ALERT_TTL);
+  const pad = n => String(n).padStart(2,'0');
   document.getElementById('msgUntil').value =
-    `${exp.getUTCFullYear()}-${pad(exp.getUTCMonth()+1)}-${pad(exp.getUTCDate())}T${pad(exp.getUTCHours())}:${pad(exp.getUTCMinutes())}`;
+    `${exp.getFullYear()}-${pad(exp.getMonth()+1)}-${pad(exp.getDate())}T${pad(exp.getHours())}:${pad(exp.getMinutes())}`;
 
   regenerateMsg();
+
+  // Countdown timer
   clearInterval(expiryTimer);
   startExpiryCountdown();
 
-  sendBrowserNotif('⚠️ 雷達預警觸發', `${counties.join('、')} 超過 1/3 鄉鎮達成示警條件`);
+  // Browser notification
+  sendBrowserNotif('⚠️ 雷達預警觸發', `${counties.join('、')} 超過 1/3 鄉鎮達成示警條件，請確認並發送通知。`);
   document.getElementById('notifBadge').style.display = 'flex';
-  log(`預警觸發：${counties.join('、')}`, 'warn');
+
+  log(`警示觸發：${counties.join('、')}`, 'warn');
 }
 
 function startExpiryCountdown() {
   expiryTimer = setInterval(() => {
     if (!alertTimestamp) return;
-    const remain = ALERT_TTL - (Date.now() - alertTimestamp);
+    const elapsed = Date.now() - alertTimestamp;
+    const remain = ALERT_TTL - elapsed;
     const dot = document.getElementById('expiryDot');
-    const cd  = document.getElementById('expiryCountdown');
+    const cd = document.getElementById('expiryCountdown');
+
     if (remain <= 0) {
       clearInterval(expiryTimer);
-      cd.textContent = '已逾時 — 自動丟棄';
+      cd.textContent = '已逾時 — 警示已丟棄';
       dot.className = 'expiry-dot expired';
       discardAlert();
-      log('警示逾一小時自動丟棄', 'err');
+      log('警示已逾一小時自動丟棄', 'err');
       return;
     }
+
     const m = Math.floor(remain / 60000);
     const s = Math.floor((remain % 60000) / 1000);
-    cd.textContent = `${m} 分 ${pad(s)} 秒`;
+    cd.textContent = `${m}分${String(s).padStart(2,'0')}秒`;
     dot.className = 'expiry-dot' + (m < 10 ? ' warning' : '');
   }, 1000);
 }
 
-// ══════════════════════════════════════
-// Compose
-// ══════════════════════════════════════
+// ─────────────────────────────────
+// Compose message
+// ─────────────────────────────────
 function regenerateMsg() {
   const county = document.getElementById('msgCounty').value || '{縣市}';
-  const hours  = document.getElementById('msgHours').value  || '{小時}';
-  const until  = document.getElementById('msgUntil').value;
-  const untilStr = until
-    ? until.replace('T', ' ').slice(0, 16) + '（UTC-4）'
-    : '{有效期至}';
+  const hours = document.getElementById('msgHours').value || '{小時}';
+  const until = document.getElementById('msgUntil').value || '{有效期至}';
+  const untilStr = until ? new Date(until).toLocaleString('zh-TW', { hour12: false }) : '{有效期至}';
 
-  document.getElementById('msgPreview').value =
+  const msg =
 `${county}局部降雨提醒 ⚠️ ：
 預估未來有一波較明顯的局部較強對流通過，未來 ${hours} 小時請注意較大雨勢/雷擊/局部強陣風。
 有效期至${untilStr}
 發生大雨鄉鎮列表：https://watch.ncdr.nat.gov.tw/wh/dv_ncdrnowcast_town`;
-}
-['msgCounty','msgHours','msgUntil'].forEach(id =>
-  document.getElementById(id).addEventListener('input', regenerateMsg)
-);
 
-// ══════════════════════════════════════
-// Send
-// ══════════════════════════════════════
+  document.getElementById('msgPreview').value = msg;
+}
+
+// Listen to input changes for live preview
+['msgCounty','msgHours','msgUntil'].forEach(id => {
+  document.getElementById(id).addEventListener('input', regenerateMsg);
+});
+
+// ─────────────────────────────────
+// Send flow
+// ─────────────────────────────────
 function confirmSend() {
   const msg = document.getElementById('msgPreview').value.trim();
-  if (!msg) { showToast('訊息不可空白', 'error'); return; }
+  if (!msg) { showToast('訊息內容不可空白', 'error'); return; }
+  const n8n = document.getElementById('n8nUrl').value.trim();
+  if (!n8n) { showToast('請先輸入 n8n Webhook URL', 'error'); return; }
+
   document.getElementById('modalPreview').textContent = msg;
   document.getElementById('sendModal').classList.add('open');
 }
-function closeModal() { document.getElementById('sendModal').classList.remove('open'); }
+
+function closeModal() {
+  document.getElementById('sendModal').classList.remove('open');
+}
 
 async function doSend() {
   closeModal();
-  const msg    = document.getElementById('msgPreview').value.trim();
+  const msg = document.getElementById('msgPreview').value.trim();
+  const n8n = document.getElementById('n8nUrl').value.trim();
   const county = document.getElementById('msgCounty').value;
-  log('POST → n8n...', 'info');
 
-  const payload = JSON.stringify({
-    message: msg, county,
-    timestamp: new Date().toISOString(),
-    triggered_counties: alertedCounties,
-    source: 'radar-alert-system',
-    timezone: 'UTC-4'
-  });
+  log('正在發送至 n8n...', 'info');
 
-  // Try normal first, then no-cors
-  let success = false;
   try {
-    const res = await fetch(N8N_WEBHOOK, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload
+    const res = await fetch(n8n, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: msg,
+        county,
+        timestamp: new Date().toISOString(),
+        triggered_counties: alertedCounties,
+        source: 'radar-alert-system'
+      })
     });
-    if (res.ok || res.status < 400) success = true;
-    else throw new Error('HTTP ' + res.status);
-  } catch {
-    try {
-      await fetch(N8N_WEBHOOK, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: payload });
-      success = true; // no-cors = opaque, treat as success
-    } catch (e2) {
-      showToast('發送失敗：' + e2.message, 'error');
-      log('POST 失敗：' + e2.message, 'err');
-      return;
-    }
-  }
 
-  if (success) {
-    showToast('✓ 成功發送至 n8n', 'success');
-    log('POST 成功 → n8n webhook', 'ok');
-    document.getElementById('notifBadge').style.display = 'none';
-    document.getElementById('composeStatus').textContent = 'SENT ✓';
-    sendBrowserNotif('✅ 警示已發送', county + ' 警示訊息已送出');
-    // Show posted banner
-    document.getElementById('alertBanner').classList.remove('active');
-    document.getElementById('postedBanner').classList.add('active');
-    document.getElementById('postedBannerDesc').textContent = `${county} 警示已發送 (${new Date().toLocaleTimeString('zh-TW')})`;
+    if (res.ok) {
+      showToast('✓ 成功發送至 n8n', 'success');
+      log(`成功發送警示 → ${n8n.slice(0, 40)}...`, 'ok');
+      document.getElementById('notifBadge').style.display = 'none';
+      document.getElementById('sendBtn').disabled = true;
+      document.getElementById('composeStatus').textContent = 'SENT ✓';
+    } else {
+      throw new Error('HTTP ' + res.status);
+    }
+  } catch (err) {
+    showToast('發送失敗：' + err.message, 'error');
+    log('n8n 發送失敗：' + err.message, 'err');
   }
 }
 
@@ -842,33 +987,28 @@ function discardAlert() {
   document.getElementById('expiryCountdown').textContent = '已丟棄';
   document.getElementById('notifBadge').style.display = 'none';
   document.getElementById('msgPreview').value = '';
-  log('警示已丟棄', 'warn');
+  log('警示已手動丟棄', 'warn');
   showToast('警示已丟棄', '');
 }
 
-// ══════════════════════════════════════
-// Manual refresh
-// ══════════════════════════════════════
-async function manualRefresh() {
-  refreshRadar();
-  await fetchSheets();
-  await fetchData();
-}
-
-// ══════════════════════════════════════
-// Init
-// ══════════════════════════════════════
-async function init() {
+// ─────────────────────────────────
+// Init & auto refresh
+// ─────────────────────────────────
+function init() {
+  // Check if notification already granted
   if (Notification?.permission === 'granted') {
     document.getElementById('notifBtn').classList.add('active');
-    document.getElementById('notifBtn').textContent = '🔔 已訂閱';
+    document.getElementById('notifBtn').innerHTML = '🔔 已訂閱通知';
   }
+
   refreshRadar();
-  await fetchSheets();
-  await fetchData();
-  setInterval(refreshRadar, REFRESH_MS);
-  setInterval(async () => { await fetchSheets(); await fetchData(); }, REFRESH_MS);
+  fetchData();
+
+  // Auto refresh
+  radarTimer = setInterval(refreshRadar, REFRESH_INTERVAL);
+  dataTimer = setInterval(fetchData, REFRESH_INTERVAL);
 }
+
 init();
 </script>
 </body>
