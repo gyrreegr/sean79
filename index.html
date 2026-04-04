@@ -767,9 +767,10 @@ function regenerateMsg() {
     : '{有效期至}';
 
   document.getElementById('msgPreview').value =
-`${county}強降雨提醒 ⚠️ ：
+`${county}局部降雨提醒 ⚠️ ：
 預估未來有一波較明顯的局部較強對流通過，未來 ${hours} 小時請注意較大雨勢/雷擊/局部強陣風。
-有效期至${untilStr};
+有效期至${untilStr}
+發生大雨鄉鎮列表：https://watch.ncdr.nat.gov.tw/wh/dv_ncdrnowcast_town`;
 }
 ['msgCounty','msgHours','msgUntil'].forEach(id =>
   document.getElementById(id).addEventListener('input', regenerateMsg)
