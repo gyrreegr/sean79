@@ -801,50 +801,56 @@ async function triggerAlert(counties) {
   let newAlerts = [];
 
   try {
-    // 透過 Google Visualization API 將公開試算表轉為 CSV 讀取
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM/gviz/tq?tqx=out:csv';
     const res = await fetch(sheetUrl);
     const text = await res.text();
 
-    // 簡易解析 CSV (過濾掉引號)
+    // 解析 CSV，過濾掉引號
     const rows = text.split('\n').slice(1).map(row => row.split(',').map(v => v.replace(/(^"|"$)/g, '')));
     const nowMs = Date.now();
 
     counties.forEach(county => {
-      // 依序為: id(欄位0), 有效期(欄位1), 訊息(欄位2)
-      const record = rows.find(r => r[0] === county);
-      if (record && record[1]) {
-        // 試算表為 UTC-4，將 "YYYY-MM-DD HH:mm:ss" 轉為 "YYYY-MM-DDTHH:mm:ss-04:00" 給 Date 物件解析
-        const expStr = record[1].replace(' ', 'T') + '+08:00';
-        const expTime = new Date(expStr).getTime();
-
-        if (expTime > nowMs) {
-          activeAlerts.push(county);
-        } else {
-          newAlerts.push(county);
+      // 根據你的試算表結構: 0=id, 1=有效期, 2=訊息, 3=發布縣市
+      // 找出所有符合該縣市的紀錄
+      const relatedRecords = rows.filter(r => r[3] === county || r[0] === county);
+      
+      let isActive = false;
+      for (const record of relatedRecords) {
+        if (record[1]) {
+          const expStr = record[1].replace(' ', 'T') + '+08:00';
+          const expTime = new Date(expStr).getTime();
+          if (expTime > nowMs) {
+            isActive = true;
+            break; // 只要有一筆還在有效期內，就視為 Active
+          }
         }
+      }
+
+      if (isActive) {
+        activeAlerts.push(county);
       } else {
         newAlerts.push(county);
       }
     });
   } catch (err) {
     log('讀取試算表失敗，繼續原有流程', 'err');
-    newAlerts = counties;
+    newAlerts = counties; // 若讀取失敗，為避免漏報，預設全數視為新警示
   }
 
-  // 如果有縣市仍在有效期內，顯示網頁通知與推播
+  // 攔截提示 (針對已經在有效期的縣市，僅在 Log 顯示，不發推播)
   if (activeAlerts.length > 0) {
-    const msg = `${activeAlerts.join('、')} 尚在預警有效期內`;
-    showToast(msg, 'warn');
-    log(msg + '，已發布網頁通知', 'warn');
-    sendBrowserNotif('ℹ️ 警示重疊', msg);
+    const msg = `攔截：${activeAlerts.join('、')} 尚在預警有效期內，不重複發布`;
+    log(msg, 'warn');
   }
 
-  // 如果過濾後沒有新的縣市需要發送，就提早結束不進入草稿匣
+  // 如果過濾後沒有任何「新」縣市需要發送，就提早結束，完全不觸發畫面與通知
   if (newAlerts.length === 0) return;
 
-  // 針對真正需要新發布的縣市繼續流程
-  counties = newAlerts;
+  // -----------------------------------------
+  // 以下針對「真正需要新發布的縣市」執行流程
+  // -----------------------------------------
+  counties = newAlerts; 
+  alertedCounties = counties; // 更新全域變數，確保 Webhook 使用的是過濾後的名單
   alertTimestamp = Date.now();
 
   const banner = document.getElementById('alertBanner');
@@ -857,10 +863,9 @@ async function triggerAlert(counties) {
   document.getElementById('composeStatus').textContent = 'ALERT ACTIVE';
   document.getElementById('sendBtn').disabled = false;
 
-  // Auto-fill compose
+  // 自動填寫畫面
   document.getElementById('msgCounty').value = counties.join('、');
 
-  // Set default expiry = now + 1h
   const exp = new Date(Date.now() + ALERT_TTL);
   const pad = n => String(n).padStart(2,'0');
   document.getElementById('msgUntil').value =
@@ -868,15 +873,15 @@ async function triggerAlert(counties) {
 
   regenerateMsg();
 
-  // Countdown timer
+  // 倒數計時器
   clearInterval(expiryTimer);
   startExpiryCountdown();
 
-  // Browser notification
-  sendBrowserNotif('⚠️ 雷達預警觸發', `${counties.join('、')} 超過 1/3 鄉鎮達成示警條件，請確認並發送通知。`);
+  // 瀏覽器通知 (僅通知新觸發的縣市)
+  sendBrowserNotif('⚠️ 雷達預警觸發', `${counties.join('、')} 達成示警條件，請確認並發送通知。`);
   document.getElementById('notifBadge').style.display = 'flex';
 
-  log(`警示觸發：${counties.join('、')}`, 'warn');
+  log(`新警示觸發：${counties.join('、')}`, 'warn');
 }
 
 function startExpiryCountdown() {
@@ -949,9 +954,7 @@ async function doSend() {
 
   log('正在發送至 n8n...', 'info');
 
-  // 找到 doSend 函式中的 try 區塊
   try {
-    // 【新增這兩行】抓取畫面上設定的有效期，並將 "T" 替換為空白以利閱讀
     const untilInput = document.getElementById('msgUntil').value;
     const untilUTC8 = untilInput ? untilInput.replace('T', ' ') : '未設定';
 
@@ -960,12 +963,12 @@ async function doSend() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: msg,
-        county,
+        county: county,
         timestamp: new Date().toISOString(),
         triggered_counties: alertedCounties,
         source: 'radar-alert-system',
-        // 【新增這個欄位】
-        "有效期至(自動utc+8)": untilUTC8
+        "有效期至(自動utc+8)": untilUTC8,
+        "觸發縣市": county // 新增這個欄位
       })
     });
 
