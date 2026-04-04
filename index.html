@@ -668,18 +668,20 @@ async function fetchData() {
   log('正在讀取鄉鎮預警資料...', 'info');
   try {
     // Try CORS proxy
-    const proxies = [
-      'https://corsproxy.io/?' + encodeURIComponent(DATA_URL),
-      'https://api.allorigins.win/raw?url=' + encodeURIComponent(DATA_URL),
-    ];
-    let text = null;
-    for (const url of proxies) {
-      try {
-        const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-        if (res.ok) { text = await res.text(); break; }
-      } catch {}
-    }
-    if (!text) throw new Error('無法連線至資料來源');
+    // 使用你專屬的 Cloudflare Worker Proxy
+    // ⚠️ 請把下方的網址換成你剛剛複製的 Worker 網址
+    const workerUrl = 'https://seanradarwarn.s0418563.workers.dev/'; 
+    
+    // 組合最終請求網址 (Worker網址 + ?url=目標網址)
+    const fetchUrl = workerUrl + '?url=' + encodeURIComponent(DATA_URL);
+
+    // 將超時時間稍微拉長至 10 秒，增加穩定度
+    const res = await fetch(fetchUrl, { signal: AbortSignal.timeout(10000) });
+    
+    if (!res.ok) throw new Error(`連線失敗 (HTTP ${res.status})`);
+    
+    const text = await res.text();
+    if (!text) throw new Error('取得空資料');
 
     const towns = parseCSV(text);
     if (!towns.length) throw new Error('資料解析失敗或空資料');
