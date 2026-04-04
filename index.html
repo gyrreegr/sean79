@@ -881,7 +881,7 @@ function regenerateMsg() {
 function confirmSend() {
   const msg = document.getElementById('msgPreview').value.trim();
   if (!msg) { showToast('訊息內容不可空白', 'error'); return; }
-  const N8N_WEBHOOK_URL = "https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/webhook-test/line";
+  const N8N_WEBHOOK_URL = "https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/webhook-test/warn";
 
   document.getElementById('modalPreview').textContent = msg;
   document.getElementById('sendModal').classList.add('open');
