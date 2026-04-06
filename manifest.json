@@ -1,0 +1,20 @@
+{
+  "name": "RADAR ALERT 雷達天氣警示系統",
+  "short_name": "雷達警示",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#04080f",
+  "theme_color": "#00d4ff",
+  "icons": [
+    {
+      "src": "hhttps://raw.githubusercontent.com/gyrreegr/sean79/main/logo_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "hhttps://raw.githubusercontent.com/gyrreegr/sean79/main/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
