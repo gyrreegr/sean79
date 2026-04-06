@@ -478,7 +478,7 @@
         <div>
           <div class="field-label">N8N WEBHOOK URL</div>
           <div class="n8n-row">
-            <input type="text" id="n8nUrl" value="https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/webhook/1" readonly style="color: var(--dim); background: rgba(255,255,255,0.05);" />
+            <input type="text" id="n8nUrl" value="https://n8n-zvlmckqr.us-west-1.clawcloudrun.com/webhook-test/1" readonly style="color: var(--dim); background: rgba(255,255,255,0.05);" />
           </div>
         </div>
 
@@ -607,27 +607,50 @@ function showToast(msg, type = '') {
 // Notification permission
 // ─────────────────────────────────
 async function toggleNotification() {
+  // 1. 檢查瀏覽器是否支援
   if (!('Notification' in window)) {
     showToast('此瀏覽器不支援通知功能', 'error');
     return;
   }
+
+  // 2. 如果已經允許了
   if (Notification.permission === 'granted') {
-    showToast('通知已訂閱 ✓', 'success');
+    showToast('您已經訂閱過通知了 ✓', 'success');
     document.getElementById('notifBtn').classList.add('active');
     document.getElementById('notifBtn').textContent = '🔔 已訂閱通知';
-    log('通知已訂閱', 'ok');
     return;
   }
-  const perm = await Notification.requestPermission();
-  notifPermission = perm;
-  if (perm === 'granted') {
-    document.getElementById('notifBtn').classList.add('active');
-    document.getElementById('notifBtn').innerHTML = '🔔 已訂閱通知';
-    showToast('通知訂閱成功！', 'success');
-    log('使用者授權通知', 'ok');
-  } else {
-    showToast('通知授權被拒絕', 'error');
-    log('通知授權拒絕', 'err');
+
+  // 3. 如果之前被使用者封鎖/拒絕了 (瀏覽器不會再跳出詢問視窗)
+  if (Notification.permission === 'denied') {
+    showToast('通知權限已被封鎖，請點擊瀏覽器網址列左側圖示手動開啟', 'error');
+    log('通知權限已被封鎖，需手動開啟', 'err');
+    return;
+  }
+
+  // 4. 正式向瀏覽器發出允許通知的請求
+  try {
+    const perm = await Notification.requestPermission();
+    notifPermission = perm;
+    
+    if (perm === 'granted') {
+      document.getElementById('notifBtn').classList.add('active');
+      document.getElementById('notifBtn').textContent = '🔔 已訂閱通知';
+      showToast('通知訂閱成功！', 'success');
+      log('使用者已授權通知', 'ok');
+      
+      // 發送一個測試通知讓使用者確認成功
+      new Notification('RADAR ALERT 系統通知', { 
+        body: '您已成功訂閱雷達預警通知！',
+        icon: 'https://www.cwa.gov.tw/favicon.ico'
+      });
+    } else {
+      showToast('通知授權被拒絕', 'error');
+      log('使用者拒絕通知授權', 'err');
+    }
+  } catch (err) {
+    showToast('請求權限時發生錯誤', 'error');
+    log('通知請求錯誤：' + err.message, 'err');
   }
 }
 
@@ -801,7 +824,7 @@ async function triggerAlert(counties) {
   let newAlerts = [];
 
   try {
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM/gviz/tq?tqx=out:csv';
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM/gviz/tq?tqx=out:csv&_=${Date.now()}`;
     const res = await fetch(sheetUrl);
     const text = await res.text();
 
