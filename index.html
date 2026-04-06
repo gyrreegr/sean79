@@ -568,7 +568,9 @@ let alertTimestamp = null;
 let expiryTimer = null;
 let notifPermission = Notification?.permission || 'default';
 let radarTimer, dataTimer;
-
+// 【新增】前端觸發記憶庫與 Service Worker 註冊器
+const localTriggerLock = {}; 
+let swRegistration = null;
 // ─────────────────────────────────
 // Clock
 // ─────────────────────────────────
@@ -606,57 +608,59 @@ function showToast(msg, type = '') {
 // ─────────────────────────────────
 // Notification permission
 // ─────────────────────────────────
+// 【修改】初始化 Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => { swRegistration = reg; })
+    .catch(err => console.error('Service Worker 註冊失敗:', err));
+}
+
 async function toggleNotification() {
-  // 1. 檢查瀏覽器是否支援
   if (!('Notification' in window)) {
     showToast('此瀏覽器不支援通知功能', 'error');
     return;
   }
-
-  // 2. 如果已經允許了
   if (Notification.permission === 'granted') {
     showToast('您已經訂閱過通知了 ✓', 'success');
     document.getElementById('notifBtn').classList.add('active');
     document.getElementById('notifBtn').textContent = '🔔 已訂閱通知';
     return;
   }
-
-  // 3. 如果之前被使用者封鎖/拒絕了 (瀏覽器不會再跳出詢問視窗)
   if (Notification.permission === 'denied') {
-    showToast('通知權限已被封鎖，請點擊瀏覽器網址列左側圖示手動開啟', 'error');
-    log('通知權限已被封鎖，需手動開啟', 'err');
+    showToast('通知權限已被封鎖，需手動開啟', 'error');
     return;
   }
 
-  // 4. 正式向瀏覽器發出允許通知的請求
   try {
     const perm = await Notification.requestPermission();
     notifPermission = perm;
-    
     if (perm === 'granted') {
       document.getElementById('notifBtn').classList.add('active');
       document.getElementById('notifBtn').textContent = '🔔 已訂閱通知';
       showToast('通知訂閱成功！', 'success');
-      log('使用者已授權通知', 'ok');
       
-      // 發送一個測試通知讓使用者確認成功
-      new Notification('RADAR ALERT 系統通知', { 
-        body: '您已成功訂閱雷達預警通知！',
-        icon: 'https://www.cwa.gov.tw/favicon.ico'
-      });
+      // 改用 PWA Service Worker 測試發送
+      sendBrowserNotif('RADAR ALERT 系統', '您已成功訂閱雷達預警通知！');
     } else {
       showToast('通知授權被拒絕', 'error');
-      log('使用者拒絕通知授權', 'err');
     }
   } catch (err) {
     showToast('請求權限時發生錯誤', 'error');
-    log('通知請求錯誤：' + err.message, 'err');
   }
 }
 
+// 【修改】改用 Service Worker 發送 PWA 通知
 function sendBrowserNotif(title, body) {
   if (Notification.permission !== 'granted') return;
-  new Notification(title, { body, icon: 'https://www.cwa.gov.tw/favicon.ico' });
+  if (swRegistration && 'showNotification' in swRegistration) {
+    swRegistration.showNotification(title, { 
+      body: body, 
+      icon: 'https://www.cwa.gov.tw/favicon.ico',
+      vibrate: [200, 100, 200] // 震動提示 (手機端)
+    });
+  } else {
+    new Notification(title, { body, icon: 'https://www.cwa.gov.tw/favicon.ico' });
+  }
 }
 
 // ─────────────────────────────────
@@ -817,25 +821,36 @@ function processData(towns) {
 // ─────────────────────────────────
 // Alert trigger
 // ─────────────────────────────────
-// 修改後的 triggerAlert 函式
 async function triggerAlert(counties) {
-  log('正在檢查線上警示有效期 (試算表)...', 'info');
+  log('正在檢查線上警示有效期與前端記憶...', 'info');
   let activeAlerts = [];
   let newAlerts = [];
+  const nowMs = Date.now();
+
+  // 1. 清除已過期的前端記憶鎖定
+  Object.keys(localTriggerLock).forEach(k => {
+    if (localTriggerLock[k] < nowMs) delete localTriggerLock[k];
+  });
 
   try {
-    const sheetUrl = `https://docs.google.com/spreadsheets/d/1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM/gviz/tq?tqx=out:csv&_=${Date.now()}`;
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/1GyruksMt_CxaGYB1CuAjUOghT4kRvMS2hdsIop_ORxM/gviz/tq?tqx=out:csv&_=${nowMs}`;
     const res = await fetch(sheetUrl);
     const text = await res.text();
-
-    // 解析 CSV，過濾掉引號
     const rows = text.split('\n').slice(1).map(row => row.split(',').map(v => v.replace(/(^"|"$)/g, '')));
-    const nowMs = Date.now();
 
     counties.forEach(county => {
-      // 根據你的試算表結構: 0=id, 1=有效期, 2=訊息, 3=發布縣市
-      // 找出所有符合該縣市的紀錄
-      const relatedRecords = rows.filter(r => r[3] === county || r[0] === county);
+      // 2. 優先檢查前端記憶：如果剛推播過且還在1小時內，直接視為 Active
+      if (localTriggerLock[county] && localTriggerLock[county] > nowMs) {
+        activeAlerts.push(county);
+        return;
+      }
+
+      // 3. 檢查試算表：將 id 或 縣市欄位用頓號切開比對 (解決「彰化縣、台中市」的問題)
+      const relatedRecords = rows.filter(r => {
+        const idList = r[0] ? r[0].split('、') : [];
+        const countyList = r[3] ? r[3].split('、') : [];
+        return idList.includes(county) || countyList.includes(county);
+      });
       
       let isActive = false;
       for (const record of relatedRecords) {
@@ -844,37 +859,50 @@ async function triggerAlert(counties) {
           const expTime = new Date(expStr).getTime();
           if (expTime > nowMs) {
             isActive = true;
-            break; // 只要有一筆還在有效期內，就視為 Active
+            break; 
           }
         }
       }
 
       if (isActive) {
+        // 同步更新前端記憶，確保兩邊狀態一致
+        localTriggerLock[county] = Math.max(localTriggerLock[county] || 0, nowMs + ALERT_TTL);
         activeAlerts.push(county);
       } else {
         newAlerts.push(county);
       }
     });
   } catch (err) {
-    log('讀取試算表失敗，繼續原有流程', 'err');
-    newAlerts = counties; // 若讀取失敗，為避免漏報，預設全數視為新警示
+    log('讀取試算表失敗，將依賴前端記憶判斷', 'err');
+    counties.forEach(county => {
+      if (localTriggerLock[county] && localTriggerLock[county] > nowMs) {
+        activeAlerts.push(county);
+      } else {
+        newAlerts.push(county);
+      }
+    });
   }
 
-  // 攔截提示 (針對已經在有效期的縣市，僅在 Log 顯示，不發推播)
+  // 攔截提示 
   if (activeAlerts.length > 0) {
-    const msg = `攔截：${activeAlerts.join('、')} 尚在預警有效期內，不重複發布`;
+    const msg = `攔截：${activeAlerts.join('、')} 已在預警有效期內，不重複發布`;
     log(msg, 'warn');
   }
 
-  // 如果過濾後沒有任何「新」縣市需要發送，就提早結束，完全不觸發畫面與通知
+  // 如果全被過濾掉了，結束流程
   if (newAlerts.length === 0) return;
 
   // -----------------------------------------
-  // 以下針對「真正需要新發布的縣市」執行流程
+  // 新縣市發布流程
   // -----------------------------------------
   counties = newAlerts; 
-  alertedCounties = counties; // 更新全域變數，確保 Webhook 使用的是過濾後的名單
+  alertedCounties = counties;
   alertTimestamp = Date.now();
+
+  // 4. 正式寫入前端記憶鎖定 (有效期限 1 小時)，防止下個 5 分鐘再叫
+  counties.forEach(c => {
+    localTriggerLock[c] = alertTimestamp + ALERT_TTL;
+  });
 
   const banner = document.getElementById('alertBanner');
   banner.classList.add('active');
@@ -886,7 +914,6 @@ async function triggerAlert(counties) {
   document.getElementById('composeStatus').textContent = 'ALERT ACTIVE';
   document.getElementById('sendBtn').disabled = false;
 
-  // 自動填寫畫面
   document.getElementById('msgCounty').value = counties.join('、');
 
   const exp = new Date(Date.now() + ALERT_TTL);
@@ -896,11 +923,10 @@ async function triggerAlert(counties) {
 
   regenerateMsg();
 
-  // 倒數計時器
   clearInterval(expiryTimer);
   startExpiryCountdown();
 
-  // 瀏覽器通知 (僅通知新觸發的縣市)
+  // 發送 PWA 通知
   sendBrowserNotif('⚠️ 雷達預警觸發', `${counties.join('、')} 達成示警條件，請確認並發送通知。`);
   document.getElementById('notifBadge').style.display = 'flex';
 
