@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RADAR ALERT ⚡ 雷達天氣警示系統</title>
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet"><style>
   :root {
     --bg: #04080f;
@@ -649,17 +650,20 @@ async function toggleNotification() {
   }
 }
 
-// 【修改】改用 Service Worker 發送 PWA 通知
+// 【修改】推播通知的 Icon
 function sendBrowserNotif(title, body) {
+  // 🔽 在這裡換成你自己的 Icon 圖片網址
+  const myIcon2 = 'https://raw.githubusercontent.com/gyrreegr/sean79/main/logo.png'; 
+
   if (Notification.permission !== 'granted') return;
   if (swRegistration && 'showNotification' in swRegistration) {
     swRegistration.showNotification(title, { 
       body: body, 
-      icon: 'https://www.cwa.gov.tw/favicon.ico',
-      vibrate: [200, 100, 200] // 震動提示 (手機端)
+      icon: myIcon2, // 變更 Service Worker 通知的圖示
+      vibrate: [200, 100, 200]
     });
   } else {
-    new Notification(title, { body, icon: 'https://www.cwa.gov.tw/favicon.ico' });
+    new Notification(title, { body, icon: myIcon2 }); // 變更一般網頁通知的圖示
   }
 }
 
