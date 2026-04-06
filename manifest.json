@@ -7,12 +7,12 @@
   "theme_color": "#00d4ff",
   "icons": [
     {
-      "src": "hhttps://raw.githubusercontent.com/gyrreegr/sean79/main/logo_192.png",
+      "src": "https://raw.githubusercontent.com/gyrreegr/sean79/refs/heads/main/logo_192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "hhttps://raw.githubusercontent.com/gyrreegr/sean79/main/logo.png",
+      "src": "https://raw.githubusercontent.com/gyrreegr/sean79/main/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
